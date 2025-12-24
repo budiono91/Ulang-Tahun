@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Special Day: Nazwa 🎉</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@8/swiper-bundle.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&family=Pacifico&family=Outfit:wght@300;500;800&family=Dancing+Script:wght@600;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* --- GLOBAL RESET --- */
+        body {
+            font-family: 'Poppins', sans-serif;
+            overflow: hidden; /* Awalnya hidden buat game */
+            touch-action: none;
+            color: white;
+        }
+
+        /* --- UNIFIED BACKGROUND THEME (Satu Tema Senada) --- */
+        .unified-bg {
+            /* Gradasi Ungu ke Pink Tua yang Elegan */
+            background: radial-gradient(circle at top right, #4a00e0, #8e2de2, #240b36);
+            position: fixed;
+            inset: 0;
+            z-index: -2;
+        }
+
+        /* Efek Partikel Debu/Bintang Halus di Background */
+        .floating-particles {
+            background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1h2v2H1V1zM50 50h2v2h-2v-2z' fill='%23FFF' fill-opacity='.2'/%3E%3C/svg%3E");
+            position: fixed; inset: 0; z-index: -1;
+            animation: moveParticles 60s linear infinite;
+        }
+        @keyframes moveParticles { 0% {background-position: 0 0;} 100% {background-position: 1000px 1000px;} }
+
+        /* --- UTILITIES SLIDE --- */
+        .full-screen-slide {
+            position: fixed; inset: 0; width: 100%; height: 100%;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            z-index: 50; transition: all 0.5s ease-in-out;
+            /* Tambah background transparan gelap biar teks lebih terbaca */
+            background: rgba(0,0,0,0.4); 
+            backdrop-filter: blur(5px);
+        }
+
+        .hidden-slide {
+            opacity: 0;
+            pointer-events: none;
+            z-index: -10 !important;
+        }
+
+        /* --- CUSTOM ELEMENTS --- */
+        .font-pacifico { font-family: 'Pacifico', cursive; }
+        .font-handwriting { font-family: 'Dancing Script', cursive; }
+
+        /* Tombol Game */
+        #catchMeBtn { 
+            transition: all 0.15s ease-in-out; position: absolute;
+            /* Tombolnya kita bikin agak glowing biar keliatan di background gelap */
+            box-shadow: 0 0 15px rgba(236, 72, 153, 0.5);
+        }
+        
+        /* Kartu Kaca (Glassmorphism) */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.1); /* Lebih transparan */
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 25px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+
+        /* SWIPER SLIDE 3D */
+        .swiper { width: 100%; padding: 50px 0; }
+        .swiper-slide {
+            background-position: center; background-size: cover;
+            width: 300px; height: 400px;
+            border-radius: 20px;
+            border: 3px solid rgba(255,255,255,0.3); /* Border lebih tebal */
+        }
+        .swiper-slide img { display: block; width: 100%; height: 100%; object-fit: cover; border-radius: 16px; }
+    </style>
+</head>
+<body>
+
+    <audio id="bgMusic" loop>
+        <source src="audio/lagu selamat ulang tahun.MP3" type="audio/mpeg">
+    </audio>
+
+    <div class="unified-bg"></div>
+    <div class="floating-particles"></div>
+
+    <section id="slide1" class="full-screen-slide">
+        <div class="glass-card p-8 text-center mx-4 max-w-md">
+            <h1 class="text-3xl md:text-5xl mb-6 font-bold animate-bounce text-pink-300"> Ada Kejutan Nih Dari Abdul Roblox! 🎁 </h1>
+            <p class="text-gray-200 mb-8 text-lg">Aku punya sesuatu spesial buat kamu, tapi ada syaratnya... 😜</p>
+            <button onclick="goToSlide2()" class="px-8 py-4 bg-gradient-to-r from-pink-500 to-purple-600 text-white rounded-full font-bold text-xl shadow-lg hover:scale-105 transition transform">
+                Terima Tantangan 🚀
+            </button>
+            <p class="text-gray-300 text-sm mt-8">🔈 Pastikan volume nyala ya!</p>
+        </div>
+    </section>
+
+    <section id="slide2" class="full-screen-slide hidden-slide" style="background: transparent; backdrop-filter: none;">
+        <h1 id="headerText" class="text-3xl md:text-6xl text-pink-200 font-pacifico drop-shadow-lg text-center pointer-events-none select-none px-4 mb-20">
+            Klik Tombolnya Kalo Bisa! 😝
+        </h1>
+        
+        <button id="catchMeBtn" onmouseover="dodgeBtn()" onclick="clickBtn()" 
+                class="px-6 py-3 md:px-8 md:py-4 bg-gradient-to-r from-pink-400 to-purple-400 text-white rounded-full font-extrabold text-lg md:text-xl border-2 border-white/30 z-50 whitespace-nowrap">
+            KLIK DONGG!
+        </button>
+    </section>
+
+    <section id="slide3" class="full-screen-slide hidden-slide">
+        <div class="glass-card p-8 rounded-2xl max-w-lg w-full text-center mx-4">
+            <h2 class="text-4xl font-bold text-pink-300 mb-4 font-pacifico">Yeay Berhasil! 👏</h2>
+            <p class="text-white text-lg leading-relaxed mb-8">
+                Wah, gigih juga ya kamu ngejar tombolnya sampe dapet wkwk. 😆 <br><br>
+                Sabar ya, jangan emosi dulu. Itu tadi cuma pemanasan kok.
+                Sekarang, udah siap liat hadiah sebenernya?
+            </p>
+            <button onclick="goToSlide4()" class="px-10 py-4 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-full font-bold shadow-2xl hover:opacity-90 transition transform hover:scale-105 text-xl animate-pulse">
+                Buka Kado 🎁
+            </button>
+        </div>
+    </section>
+
+    <main id="slide4" class="hidden-slide relative z-10 w-full min-h-screen overflow-y-auto">
+        
+        <div class="min-h-screen flex flex-col justify-center items-center text-center px-4 py-20">
+            <div data-aos="zoom-in" data-aos-duration="1500">
+                <h2 class="text-6xl md:text-8xl font-handwriting text-transparent bg-clip-text bg-gradient-to-r from-pink-300 to-purple-300 mb-4 drop-shadow-lg">
+                    Happy Birthday Bocil Roblox
+                </h2>
+                <h1 class="text-4xl md:text-6xl font-bold tracking-tight text-white mb-8">
+                    Nazwa Fauziatur Rahmah
+                </h1>
+                <div class="glass-card p-4 inline-block">
+                    <p class="text-gray-200 text-lg">Scroll ke bawah ✨</p>
+                </div>
+                <div class="mt-12 animate-bounce text-pink-400 text-3xl">↓</div>
+            </div>
+        </div>
+
+        <div class="py-20 px-4 bg-black/20 backdrop-blur-md border-y border-white/10">
+            <div class="max-w-4xl mx-auto text-center mb-12" data-aos="fade-up">
+                <h2 class="text-4xl font-bold mb-2 font-handwriting text-pink-300">Captured Moments 📸</h2>
+                <p class="text-sm text-gray-300">Geser slide di bawah ini (Swipe) 👉</p>
+            </div>
+
+            <div class="swiper mySwiper" data-aos="fade-up" data-aos-delay="200">
+                <div class="swiper-wrapper">
+                    <div class="swiper-slide"><img src="image/foto-roblox.jpeg" /></div>
+                    <div class="swiper-slide"><img src="image/foto awa 1.jpeg" /></div>
+                    <div class="swiper-slide"><img src="image/foto awa 2.jpeg" /></div>
+                    <div class="swiper-slide"><img src="image/foto awa 3.jpeg" /></div>
+                    <div class="swiper-slide"><img src="image/foto awa 4.jpeg" /></div>
+                </div>
+                <div class="swiper-pagination"></div>
+            </div>
+        </div>
+
+        <div class="min-h-screen flex items-center justify-center px-4 py-20">
+            <div class="glass-card max-w-3xl w-full p-8 md:p-12 text-center relative" data-aos="flip-up">
+                <div class="absolute -top-10 left-1/2 transform -translate-x-1/2 text-6xl">🎂</div>
+                <h2 class="text-4xl font-bold mb-8 font-handwriting text-pink-300 mt-6">My Wish for You</h2>
+                <p class="text-gray-100 text-xl leading-relaxed mb-10 font-light">
+                    Selamat ulang tahun! 🎉<br><br>
+                    "Selamat ulang tahun untukmu yang lahir pada 23 Desember 2006, 19 tahun yang lalu. Alhamdulillah, Allah masih memberikan kesempatan bagiku untuk melihatmu tumbuh menjadi sosok yang luar biasa hingga hari ini.
+Di sisa usiamu ini, aku memohon kepada Sang Pemilik Hati agar menjagamu dalam lindungan-Nya, memberikanmu kesehatan yang afiat, dan hati yang selalu merasa cukup (qana’ah). Semoga setiap tetes keringat dan usahamu berbuah pahala. Maaf ya jika ucapanku sedikit terlambat, tapi bagiku, mendoakanmu adalah agenda yang tidak pernah ada kata terlambat. Stay blessed and keep shining for the sake of Allah."
+                    <br><br>
+                    <span class="font-handwriting text-2xl text-pink-300">Happy Birthday, Nazwa!</span>
+                </p>
+                
+                <div class="flex flex-col md:flex-row gap-4 justify-center">
+                    <button onclick="location.reload()" class="px-8 py-3 bg-white/10 text-white rounded-full font-bold hover:bg-white/20 transition border border-white/30">
+                        Ulangi Game 🔄
+                    </button>
+                    <a href="https://wa.me/+6285123607541?text=Webnya%20keren%20banget!%20Makasih%20ya%20🥰" class="px-8 py-3 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-full font-bold shadow-lg hover:scale-105 transition transform">
+                        Balas via WhatsApp 💬
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <footer class="py-8 text-center text-gray-400 text-sm">
+            <p>Made with ❤️ by Abdul | Special Day</p>
+        </footer>
+    </main>
+
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/swiper@8/swiper-bundle.min.js"></script>
+
+    <script>
+        // --- VARIABLES ---
+        let attempt = 0;
+        const maxAttempts = 15; // Jumlah klik untuk menang
+        const music = document.getElementById('bgMusic');
+        
+        const slides = {
+            1: document.getElementById('slide1'),
+            2: document.getElementById('slide2'),
+            3: document.getElementById('slide3'),
+            4: document.getElementById('slide4')
+        };
+        
+        // Kata-kata ledekan
+        const taunts = ["Gak kena! 🤪", "Kejar aku! 🏃‍♂️", "Sat Set Donggg", "Wleee 😜", "Dikit lagi 🤏", "Sabar... 😂", "Lambat ih! 🐢", "Hampir... 👻"];
+        const btn = document.getElementById('catchMeBtn');
+        const header = document.getElementById('headerText');
+
+        // --- FUNCTIONS PINDAH SLIDE ---
+        function switchSlide(hideId, showId) {
+            // Efek fade out slide lama
+            slides[hideId].style.opacity = 0;
+            setTimeout(() => {
+                slides[hideId].classList.add('hidden-slide');
+                // Efek fade in slide baru
+                slides[showId].classList.remove('hidden-slide');
+                setTimeout(() => {
+                    slides[showId].style.opacity = 1;
+                }, 50);
+            }, 500);
+        }
+
+        // 1. DARI INTRO KE GAME
+        function goToSlide2() {
+            switchSlide(1, 2);
+            music.volume = 0.5;
+            music.play().catch(e => console.log("Audio block", e));
+        }
+
+        // 2. LOGIKA GAME (SLIDE 2)
+        function dodgeBtn() {
+            if (attempt >= maxAttempts) return;
+            attempt++;
+            
+            header.innerText = taunts[attempt % taunts.length];
+            
+            const maxX = window.innerWidth - btn.clientWidth - 50;
+            const maxY = window.innerHeight - btn.clientHeight - 50;
+            btn.style.left = Math.max(20, Math.random() * maxX) + 'px';
+            btn.style.top = Math.max(20, Math.random() * maxY) + 'px';
+
+            if (attempt >= maxAttempts) {
+                header.innerText = "Yaudah nyerah deh... Klik aja 🥺";
+                btn.innerText = "KLIK SINI ❤️";
+                // Ubah tombol jadi merah menyala saat nyerah
+                btn.classList.remove('from-pink-400', 'to-purple-400');
+                btn.classList.add('bg-red-500', 'animate-pulse', 'shadow-[0_0_30px_red]');
+            }
+        }
+
+        function clickBtn() {
+            if (attempt < maxAttempts) {
+                dodgeBtn();
+            } else {
+                // MENANG -> KE SLIDE 3 (PESAN)
+                switchSlide(2, 3);
+            }
+        }
+
+        // 3. DARI PESAN KE HADIAH UTAMA (SLIDE 4)
+        function goToSlide4() {
+            switchSlide(3, 4);
+            
+            // Aktifkan Scroll
+            document.body.style.overflowY = 'auto';
+            document.body.style.touchAction = 'auto';
+            
+            // Init Library & Confetti
+            setTimeout(() => {
+                initLibraries();
+                triggerConfetti();
+            }, 600);
+        }
+
+        function initLibraries() {
+            AOS.init({ once: true, duration: 1000, offset: 100 });
+            new Swiper(".mySwiper", {
+                effect: "coverflow", grabCursor: true, centeredSlides: true, slidesPerView: "auto",
+                coverflowEffect: { rotate: 30, stretch: 0, depth: 200, modifier: 1, slideShadows: true },
+                autoplay: { delay: 3000, disableOnInteraction: false },
+                pagination: { el: ".swiper-pagination" }
+            });
+        }
+
+        function triggerConfetti() {
+            const duration = 3000; const end = Date.now() + duration;
+            (function frame() {
+                confetti({ particleCount: 5, angle: 60, spread: 55, origin: { x: 0 }, colors: ['#ffbb00', '#ff0044', '#aa00ff'] });
+                confetti({ particleCount: 5, angle: 120, spread: 55, origin: { x: 1 }, colors: ['#ffbb00', '#ff0044', '#aa00ff'] });
+                if (Date.now() < end) requestAnimationFrame(frame);
+            }());
+        }
+    </script>
+</body>
+</html>
